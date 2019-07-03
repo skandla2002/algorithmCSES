@@ -16,3 +16,5 @@ int hamming(string a, string b){
 int hamming(int a, int b){
     return __builtin_popcount(a^b);
 }
+
+// 신규 알고리즘
