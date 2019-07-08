@@ -7,4 +7,28 @@ int main(){
     int a, b;
     string x;
     cin >> a >> b >> x;
+
+    // 입력 출력
+    int a, b;
+    string x;
+    cin >> a >> b >> x;
+
+    int a = 123, b = 456;
+    string x = "monkey";
+    cout << a << " " << b << " " << x << "\n"
+
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+
+    int a, b;
+    scanf("%d %d", &a, &b);
+
+    int a = 123, b= 456;
+    printf("%d %d\n", a, b);
+
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdin);
+
 }
+
+
