@@ -1,3 +1,5 @@
+#include <algorithm>
+
 using namespace std;
 
 class AplusBproblem{
@@ -6,3 +8,4 @@ public:
         return a + b;
     }
 };
+
