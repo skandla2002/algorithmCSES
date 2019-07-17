@@ -1,14 +1,19 @@
+
+
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 import com.sun.org.apache.xml.internal.serializer.utils.StringToIntTable;
 
-public class Main {
+public class mainSum {
     static int N; // 숫자 개수
     static int M; // 변경 횟수
     static int K; // 구간합을 구하는 횟수
 
-    static long[] tree;
+    static long[] tree; // 실제 트리
+    static long[] lazy; // 계산 안한 레이지 트리
+    
     static int k;
     static int treeSize; // 크기는 2^k
     static int startIdx; // 리프 노드의 시작 인덱스
@@ -26,16 +31,17 @@ public class Main {
         while(N > Math.pow(2, k++)){}
         treeSize = (int)Math.pow(2,k);
         tree = new long[treeSize];
+        lazy = new long[treeSize];
         startIdx = treeSize/2;
 
         // 숫자 입력받음
         for(int i = 0; i < N;i++){
-            int a = Integer.parseint(br.readLine());
+            int a = Integer.parseInt(br.readLine());
             tree[startIdx + i] = a;
         }
 
         // 트리 채우기
-        fillTree();
+        fillTree(K);
 
         // 변경 및 부분합 구하기
         for(int i = 0; i < M + k ; i++){
@@ -56,7 +62,7 @@ public class Main {
 
     static void print(){
         for(long t : tree){
-            System.out.printf("%d", t);
+            System.out.printf("%d", t);;
         }
     }
 
@@ -71,6 +77,8 @@ public class Main {
 
     static long sum(int idx, int left, int right, int start, int end){
 
+    	update_lazy(idx, start, end);
+    	
         // 현재구간이 구하려는 구간 바깥
         if(end < left || right < start){
             return 0;
@@ -80,10 +88,11 @@ public class Main {
         if(left <= start && end <= right){
             return tree[idx];
         }
+        int mid = (start + end) / 2;
 
         // 현재 구간과 구하려는 구간이 겹침
-        return sum(idx*2, left, right, start, (start + end) /2) +
-                sum(idx*2 + 1, left, right, (start+end)/2 + 1, end);
+        return sum(idx*2, left, right, start, mid) +
+                sum(idx*2 + 1, left, right, mid + 1, end);
     }
 
     /**
@@ -92,7 +101,7 @@ public class Main {
      */
 
     static void update(int idx, int num){
-        long delta = num - tree[startidx + idx -1];
+        long delta = num - tree[startIdx + idx -1];
         int updateIdx = startIdx + idx -1;
         
         while(0<updateIdx){
@@ -100,9 +109,51 @@ public class Main {
             updateIdx /= 2;
         }
     }
+    
+    static void update_range(int idx, int start, int end, int left, int right, int diff){
+    	update_lazy(idx, start, end);
+    	if (end < left || right < start) return;
+        if (left <= start && start <= right) {
+            tree[idx] += (end - start + 1) * diff;
+            if (start != end) {
+                lazy[idx * 2] += diff;
+                lazy[idx * 2 + 1] += diff;
+            }
+            return;
+        }
+        int mid = (start + end) / 2;
+        update_range(idx * 2, start, mid, left, right, diff);
+        update_range(idx * 2 + 1, mid + 1, end, left, right, diff);
+        tree[idx] = tree[idx * 2] + tree[idx * 2 + 1];
+    }
+    
+    static long init(int idx, int start, int end){
+    	if(start == end) return tree[idx] = lazy[start];
+    	int mid = (start + end) /2;
+    	return tree[idx] = init(idx * 2, start, mid) + init(idx * 2 + 1, mid + 1, end);
+    }
 
     static long fillTree(int index){
-        if(index < treeSize/2) return tree[idx] = fillTree(index*2) + fillTree(index*2 + 1);
+        if(index < treeSize/2) return tree[index] = fillTree(index*2) + fillTree(index*2 + 1);
         else return tree[index];
     }
+    
+    /**
+     * @param idx 현재 위치
+     * @param start 현재 위치 노드 자손 리프노드의 시작
+     * @param start 현재 위치 노드 자손 리프노드의 끝
+     * @return
+     */
+    static void update_lazy(int idx, int start, int end){
+    	if(lazy[idx] != 0){
+    		tree[idx] += (end - start+1) * lazy[idx];
+    		if(start != end){
+    			lazy[idx * 2] += lazy[idx];
+    			lazy[idx * 2 + 1] += lazy[idx];
+    		}
+    		lazy[idx] = 0;
+    	}
+    }
+    
+
 }
