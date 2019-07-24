@@ -10,7 +10,7 @@ public class Solution {
 	
 	static int N;
 	static int Min;
-	static int[] Result;
+	static int[][] Result; // 점수, 결과(0: 생존, 1: 죽음)
 	static Point[][] Temp;
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
@@ -20,9 +20,10 @@ public class Solution {
 //		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = null;
 		int T = Integer.parseInt(br.readLine());
+		int confirmBattleInt = 0;
 		for(int i = 0 ; i < T ; i++){
 			N = Integer.parseInt(br.readLine());
-			Result = new int[N]; 
+			Result = new int[N][2]; 
 			Temp = new Point[N][2];
 			for(int j = 0 ; j < N ; j++){
 				st = new StringTokenizer(br.readLine());
@@ -34,9 +35,22 @@ public class Solution {
 			// 시간내 처리 방식 확인
 			for(int Min = 0 ; Min < 31; Min++){
 				for(int k = 0 ; k < N ; k ++ ){
-					int ccwResult = ccw(Temp[k][0], Temp[k][1], Temp[k+1][0]);
-					if (ccwResult == 0){
-						
+					if(Result[k][1] == 1) continue;
+					for(int l = 1 ; l < N ; l++){
+						if(Result[l][1] == 1) continue;
+						if(k == l) continue;
+						confirmBattleInt = ccw(Temp[k][0], Temp[k][1], Temp[l][0]) * ccw(Temp[k][0], Temp[k][1], Temp[l][1]);
+						if(confirmBattleInt > 0){
+						}else if(confirmBattleInt < 0){
+							Result[k][0] = Min;
+							Result[k][1] = 1;
+						}else {
+							// 0일때
+							if(Math.min(Temp[k][0], Temp[k][1]) > Math.max(Temp[l][0], Temp[l][1])){
+
+							}
+						}
+						setResult(k);
 					}
 				}
 			}
@@ -51,6 +65,12 @@ public class Solution {
 		
 	}
 	
+	static void setResult(int k){
+		Temp[k][0].x = Temp[k][0].x/2;
+		Temp[k][0].y = Temp[k][0].y/2;
+		Temp[k][1].x = Temp[k][1].x/2;
+		Temp[k][1].y = Temp[k][1].y/2;
+	}
 	static int ccw(Point p1, Point p2, Point p3){
 		long tmp = (p1.x * p2.y + p2.x * p3.y + p3.x * p1.y) - (p1.y * p2.x + p2.y * p3.x + p3.y * p1.x);
 		if(tmp > 0) return 1;
@@ -65,10 +85,10 @@ public class Solution {
 //		else return 0;
 //	}
 	
-	static String makeInt(int[] Result){
+	static String makeInt(int[][] Result){
 		String resultStr = "";
 		for(int i = 0 , len = Result.length ; i < len ; i++){
-			resultStr = resultStr + " " + Result[i];
+			resultStr = resultStr + " " + Result[i][0];
 		}
 		return resultStr;
 	}
